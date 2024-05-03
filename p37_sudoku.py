@@ -47,6 +47,22 @@ class Test確定できる数字を置く:
         assert value == "9"
 
 
+def test_バックトラック():
+    # arrange
+    tried = []
+    def solve_by(p):
+        tried.append(p)
+        return p == 2
+    def try_possibilities(possibilities):
+        for p in possibilities:
+            if solve_by(p):
+                return True
+        return False
+    # act
+    try_possibilities([1, 2])
+    # assert
+    assert tried == [1, 2]
+
 
 class Sudoku:
     def __init__(self, cells: list[list[str]]):
