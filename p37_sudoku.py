@@ -60,14 +60,26 @@ class Sudoku:
     def __init__(self, cells: list[list[str]]):
         self.cells = cells
 
+    def get_row(self, row):
+        return [c for c in self.cells[row]]
+
+    def get_col(self, col):
+        return [r[col] for r in self.cells if len(r) > col]
+
+    def get_block(self, col, row):
+        return [self.get_cell((row // 3) * 3 + r, (col // 3) * 3 + c) for c in range(3) for r in range(3)]
+
+    def get_cell(self, r, c):
+        if len(self.cells) <= r or len(self.cells[r]) <= c:
+            return "."
+        return self.cells[r][c]
+
     def get_cell_value_if_fixed(self, col: int, row: int) -> str | None:
-        available = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
-        for c in self.cells[row]:
-            if c == ".":
-                continue
-            available.remove(c)
-        if len(available) == 1:
-            return available[0]
+        available = set(["1", "2", "3", "4", "5", "6", "7", "8", "9"])
+        used = set(self.get_row(row) + self.get_col(col) + self.get_block(row, col)) - set(["."])
+        possible = available - used
+        if len(possible) == 1:
+            return possible.pop()
         else:
             return None
 
