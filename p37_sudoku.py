@@ -15,3 +15,16 @@ def test_確定できる数字を置く():
     assert value == "9"
 
 
+class Sudoku:
+    def __init__(self, cells: list[list[str]]):
+        self.cells = cells
+
+    def fix_cell(self, col: int, row: int) -> str:
+        available = ["1", "2", "3", "4", "5", "6", "7", "8", "9"]
+        for c in self.cells[row]:
+            if c == ".":
+                continue
+            available.remove(c)
+        return available[0]
+
+
