@@ -12,7 +12,7 @@
 
 
 class Test確定できる数字を置く:
-    def test_確定できる数字を置く(self):
+    def test_横一列で確定できる(self):
         # arrange
         sudoku = Sudoku([[".", "8", "7", "6", "5", "4", "3", "2", "1"]])
         # act
@@ -20,7 +20,7 @@ class Test確定できる数字を置く:
         # assert
         assert value == "9"
 
-    def test_確定できる数字を置く_数字を確定できない場合(self):
+    def test_確定できない(self):
         # arrange
         sudoku = Sudoku([["."]])
         # act
@@ -28,7 +28,7 @@ class Test確定できる数字を置く:
         # assert
         assert value == None
 
-    def test_確定できる数字を置く_組み合わせ(self):
+    def test_組み合わせで確定できる(self):
         # arrange
         sudoku = Sudoku([
             [".", ".", ".", ".", ".", ".", "3", "2", "1"],
