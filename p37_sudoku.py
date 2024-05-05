@@ -6,8 +6,12 @@
 #   - [ ] 縦一列だけで確定できる数字を置く
 #   - [ ] 3x3ブロックだけで確定できる数字を置く
 #   - [x] 組み合わせで確定できる数字を置く
-# - [ ] 数字を仮置きして進める
 # - [ ] 行き詰まったら仮置きを戻す (バックトラック)
+#   - [ ] 可能な手をすべて確認する
+#   - [ ] 可能な手を見つけてさらに探索する
+#   - [ ] 行き詰まったらバックトラックする
+#   - [ ] バックトラックしたとき状態も戻す
+# - [ ] 数字を仮置きして進める
 # - [ ] 現在の状態を保持する
 
 
@@ -47,21 +51,52 @@ class Test確定できる数字を置く:
         assert value == "9"
 
 
-def test_バックトラック():
-    # arrange
-    tried = []
-    def solve_by(p):
-        tried.append(p)
-        return p == 2
-    def try_possibilities(possibilities):
-        for p in possibilities:
-            if solve_by(p):
+class Testバックトラック:
+    @staticmethod
+    def try_possibilities(possibilities, solve_by, search_next_moves=None):
+        moves = possibilities[:]
+        while moves:
+            m = moves.pop(0)
+            if solve_by(m):
                 return True
+            if search_next_moves:
+                moves = search_next_moves() + moves
         return False
-    # act
-    try_possibilities([1, 2])
-    # assert
-    assert tried == [1, 2]
+
+    def test_可能な手をすべて確認する(self):
+        # arrange
+        tried = []
+        def _1はNGで2はOK(p):
+            tried.append(p)
+            return p == 2
+        # act
+        solved = Testバックトラック.try_possibilities([1, 2], solve_by=_1はNGで2はOK)
+        # assert
+        assert solved
+        assert tried == [1, 2]
+
+    def test_可能な手を見つけてさらに探索する(self):
+        # arrange
+        tried = []
+        def _1の後2はNGで3の後4はOK(p):
+            tried.append(p)
+            return len(tried) >= 2 and tried[-2] == 3 and tried[-1] == 4
+
+        def search_next_moves():
+            if tried[-1] == 1:
+                return [2]
+            if tried[-1] == 3:
+                return [4]
+            return []
+
+        # act
+        solved = Testバックトラック.try_possibilities([1, 3],
+                                                      solve_by=_1の後2はNGで3の後4はOK,
+                                                      search_next_moves=search_next_moves)
+        # assert
+        assert solved
+        assert tried == [1, 2, 3, 4]
+
 
 
 class Sudoku:
