@@ -53,14 +53,13 @@ class Test確定できる数字を置く:
 
 class Testバックトラック:
     @staticmethod
-    def try_possibilities(possibilities, solve_by, search_next_moves=None):
-        moves = possibilities[:]
-        while moves:
+    def try_possibilities(solve_by, search_next_moves):
+        moves = []
+        while True:
+            moves = search_next_moves() + moves
             m = moves.pop(0)
             if solve_by(m):
                 return True
-            if search_next_moves:
-                moves = search_next_moves() + moves
         return False
 
     def test_可能な手をすべて確認する(self):
@@ -69,8 +68,11 @@ class Testバックトラック:
         def _1はNGで2はOK(p):
             tried.append(p)
             return p == 2
+        def search_next_moves():
+            return [1, 2] if not tried else []
         # act
-        solved = Testバックトラック.try_possibilities([1, 2], solve_by=_1はNGで2はOK)
+        solved = Testバックトラック.try_possibilities(solve_by=_1はNGで2はOK,
+                                                      search_next_moves=search_next_moves)
         # assert
         assert solved
         assert tried == [1, 2]
@@ -82,7 +84,9 @@ class Testバックトラック:
             tried.append(p)
             return len(tried) >= 2 and tried[-2] == 3 and tried[-1] == 4
 
-        def search_next_moves():
+        def 最初は1_3で1の後2を試し3の後は4を試す():
+            if len(tried) == 0:
+                return [1, 3]
             if tried[-1] == 1:
                 return [2]
             if tried[-1] == 3:
@@ -90,9 +94,8 @@ class Testバックトラック:
             return []
 
         # act
-        solved = Testバックトラック.try_possibilities([1, 3],
-                                                      solve_by=_1の後2はNGで3の後4はOK,
-                                                      search_next_moves=search_next_moves)
+        solved = Testバックトラック.try_possibilities(solve_by=_1の後2はNGで3の後4はOK,
+                                                      search_next_moves=最初は1_3で1の後2を試し3の後は4を試す)
         # assert
         assert solved
         assert tried == [1, 2, 3, 4]
