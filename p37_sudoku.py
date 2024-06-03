@@ -100,7 +100,30 @@ class Testバックトラック:
         assert solved
         assert tried == [1, 2, 3, 4]
 
+    def test_行き詰まったらバックトラックする(self):
+        # arrange
+        tried = []
+        def _1の後2はNGで3の後4はOK(p):
+            tried.append(p)
+            return len(tried) >= 2 and tried[-2] == 3 and tried[-1] == 4
 
+        def 最初は101と201と301でそれぞれプラス1ずつして1桁が3に達したら行き詰まる():
+            seqs = [[101, 102, 103], [201, 202, 203], [301, 302, 303]]
+            if len(tried) == 0:
+                return [a[0] for a in seqs]
+            for a in seqs:
+                for i, v in enumerate(a):
+                    if v == tried[-1]:
+                        if i + 1 < len(a):
+                            return [a[i + 1]]
+                        return []
+
+        # act
+        solved = Testバックトラック.try_possibilities(solve_by=_1の後2はNGで3の後4はOK,
+                                                      search_next_moves=最初は101と201と301でそれぞれプラス1ずつして1桁が3に達したら行き詰まる)
+        # assert
+        assert not solved
+        assert tried == [101, 102, 103, 201, 202, 203, 301, 302, 303]
 
 class Sudoku:
     def __init__(self, cells: list[list[str]]):
