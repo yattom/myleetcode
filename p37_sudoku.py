@@ -57,6 +57,8 @@ class Testバックトラック:
         moves = []
         while True:
             moves = search_next_moves() + moves
+            if not moves:
+                break
             m = moves.pop(0)
             if solve_by(m):
                 return True
