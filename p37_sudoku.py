@@ -127,6 +127,7 @@ class Testバックトラック:
         assert not solved
         assert tried == [101, 102, 103, 201, 202, 203, 301, 302, 303]
 
+
 class Sudoku:
     def __init__(self, cells: list[list[str]]):
         self.cells = cells
