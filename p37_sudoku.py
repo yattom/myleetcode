@@ -1,5 +1,6 @@
 # TODO
 # 数独を解く
+# - [x] get_cell()の引数を入れ替える
 # - [x] 確定できる数字を置く
 #   - [x] 横一行だけで確定できる数字を置く
 #   - [x] 数字を確定できない場合
@@ -11,6 +12,11 @@
 #   - [x] 可能な手を見つけてさらに探索する
 #   - [x] 行き詰まったらバックトラックする
 #   - [ ] バックトラックしたとき状態も戻す
+# - [ ] 全体を動かす
+#   - [ ] すでに解けている問題を解く
+#   - [ ] 自明な問題を解く
+#   - [ ] 仮置きが必要な問題を解く
+#   - [ ] まともな問題を解いて時間の様子を見る
 # - [ ] 数字を仮置きして進める
 # - [ ] 現在の状態を保持する
 
@@ -128,6 +134,105 @@ class Testバックトラック:
         assert tried == [101, 102, 103, 201, 202, 203, 301, 302, 303]
 
 
+class Test全体を動かす:
+    def test_すでに解けている問題(self):
+        # arrange
+        # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
+        sudoku = Sudoku([
+            ['5', '3', '4', '6', '7', '8', '9', '1', '2'],
+            ['6', '7', '2', '1', '9', '5', '3', '4', '8'],
+            ['1', '9', '8', '3', '4', '2', '5', '6', '7'],
+            ['8', '5', '9', '7', '6', '1', '4', '2', '3'],
+            ['4', '2', '6', '8', '5', '3', '7', '9', '1'],
+            ['7', '1', '3', '9', '2', '4', '8', '5', '6'],
+            ['9', '6', '1', '5', '3', '7', '2', '8', '4'],
+            ['2', '8', '7', '4', '1', '9', '6', '3', '5'],
+            ['3', '4', '5', '2', '8', '6', '1', '7', '9'],
+        ])
+        # act
+        solved = sudoku.solve()
+        # assert
+        assert solved is True
+
+    def test_自明な問題(self):
+        # arrange
+        # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
+        sudoku = Sudoku([
+            ['.', '3', '4', '6', '7', '8', '9', '1', '2'],
+            ['6', '7', '2', '1', '9', '5', '3', '4', '8'],
+            ['1', '9', '8', '3', '4', '2', '5', '6', '7'],
+            ['8', '5', '9', '7', '6', '1', '4', '2', '3'],
+            ['4', '2', '6', '8', '5', '3', '7', '9', '1'],
+            ['7', '1', '3', '9', '2', '4', '8', '5', '6'],
+            ['9', '6', '1', '5', '3', '7', '2', '8', '4'],
+            ['2', '8', '7', '4', '1', '9', '6', '3', '5'],
+            ['3', '4', '5', '2', '8', '6', '1', '7', '9'],
+        ])
+        # act
+        solved = sudoku.solve()
+        # assert
+        assert solved is True
+        assert sudoku.get_cell(0, 0) == '5'
+
+
+
+class TestIsSolved:
+    def test_解けている(self):
+        # arrange
+        # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
+        sudoku = Sudoku([
+            ['5', '3', '4', '6', '7', '8', '9', '1', '2'],
+            ['6', '7', '2', '1', '9', '5', '3', '4', '8'],
+            ['1', '9', '8', '3', '4', '2', '5', '6', '7'],
+            ['8', '5', '9', '7', '6', '1', '4', '2', '3'],
+            ['4', '2', '6', '8', '5', '3', '7', '9', '1'],
+            ['7', '1', '3', '9', '2', '4', '8', '5', '6'],
+            ['9', '6', '1', '5', '3', '7', '2', '8', '4'],
+            ['2', '8', '7', '4', '1', '9', '6', '3', '5'],
+            ['3', '4', '5', '2', '8', '6', '1', '7', '9'],
+        ])
+        # act
+        # assert
+        assert sudoku.is_solved()
+
+    def test_解けていない(self):
+        # arrange
+        # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
+        sudoku = Sudoku([
+            ['5', '3', '4', '6', '7', '8', '9', '1', '2'],
+            ['6', '7', '2', '1', '9', '5', '3', '4', '8'],
+            ['1', '9', '8', '3', '4', '2', '5', '6', '7'],
+            ['8', '5', '9', '7', '6', '1', '4', '2', '3'],
+            ['4', '2', '6', '8', '5', '3', '7', '9', '1'],
+            ['7', '1', '3', '9', '2', '4', '8', '5', '6'],
+            ['9', '6', '1', '5', '3', '7', '2', '8', '4'],
+            ['2', '8', '7', '4', '1', '9', '6', '3', '5'],
+            ['3', '4', '5', '2', '8', '6', '1', '7', '.'],
+        ])
+        # act
+        # assert
+        assert not sudoku.is_solved()
+
+    def test_妥当性は確認しない(self):
+        # arrange
+        # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
+        sudoku = Sudoku([
+            ['0', '0', '0', '0', '9', '9', '9', '9', '9'],
+            ['0', '0', '0', '0', '9', '9', '9', '9', '9'],
+            ['0', '0', '0', '0', '9', '9', '9', '9', '9'],
+            ['0', '0', '0', '0', '9', '9', '9', '9', '9'],
+            ['0'],
+            ['0', '0', '0', '0', '9', '9', '9', '9', '9'],
+            ['0', '0', '0', '0', '9', '9', '9', '9', '9'],
+            ['0', '0', '0', '0', '9', '9', '9', '9', '9'],
+            # 9行目が足りない
+        ])
+        # act
+        # assert
+        # 数独のルールを守っているかは確認しない
+        assert sudoku.is_solved()
+
+
 class Sudoku:
     def __init__(self, cells: list[list[str]]):
         self.cells = cells
@@ -139,12 +244,15 @@ class Sudoku:
         return [r[col] for r in self.cells if len(r) > col]
 
     def get_block(self, col: int, row: int) -> list[str]:
-        return [self.get_cell((row // 3) * 3 + r, (col // 3) * 3 + c) for c in range(3) for r in range(3)]
+        return [self.get_cell((col // 3) * 3 + r, (row // 3) * 3 + c) for c in range(3) for r in range(3)]
 
-    def get_cell(self, row: int, col: int) -> str:
+    def get_cell(self, col: int, row: int) -> str:
         if len(self.cells) <= row or len(self.cells[row]) <= col:
             return "."
         return self.cells[row][col]
+
+    def set_cell(self, col: int, row: int, val: str) -> None:
+        self.cells[row][col] = val
 
     def get_cell_value_if_fixed(self, col: int, row: int) -> str | None:
         available = set(["1", "2", "3", "4", "5", "6", "7", "8", "9"])
@@ -154,4 +262,19 @@ class Sudoku:
             return possible.pop()
         else:
             return None
+
+    def is_solved(self):
+        return not '.' in ''.join([''.join(s) for s in self.cells])
+
+    def solve(self):
+        for c in range(9):
+            for r in range(9):
+                if self.get_cell(c, r) == '.':
+                    v = self.get_cell_value_if_fixed(c, r)
+                    if v:
+                        self.set_cell(c, r, v)
+        if self.is_solved():
+            return True
+
+
 
