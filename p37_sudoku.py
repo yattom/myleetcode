@@ -377,6 +377,48 @@ class Test全体を動かす:
         assert solved is True
         assert sudoku.get_cell(0, 0) == '5'
 
+    def test_仮置きが必要(self):
+        # arrange
+        # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
+        sudoku = make_sudoku(
+'''
+            . . . 6 7 8 9 1 2
+            . . . 1 9 5 3 4 8
+            . . . 3 4 2 5 6 7
+            . . . . . 1 4 2 3
+            . . . . . 3 7 9 1
+            . . . . . 4 8 5 6
+            9 6 1 5 3 7 2 8 4
+            2 8 7 4 1 9 6 3 5
+            3 4 5 2 8 6 1 7 9
+'''
+        )
+        # act
+        solved = sudoku.solve()
+        # assert
+        assert solved is True
+        assert sudoku.get_cell(0, 0) == '5'
+
+    def test_解けない場合(self):
+        # arrange
+        sudoku = make_sudoku(
+'''
+            . 9 9 9 9 9 9 9 9
+            9 9 9 9 9 9 9 9 9
+            9 9 9 9 9 9 9 9 9
+            9 9 9 9 9 9 9 9 9
+            9 9 9 9 9 9 9 9 9
+            9 9 9 9 9 9 9 9 9
+            9 9 9 9 9 9 9 9 9
+            9 9 9 9 9 9 9 9 9
+            9 9 9 9 9 9 9 9 9
+'''
+        )
+        # act
+        solved = sudoku.solve()
+        # assert
+        assert solved is False
+
 
 class TestIsSolved:
     def test_解けている(self):
@@ -476,12 +518,16 @@ class Sudoku:
 
     def solve(self):
         while not self.is_solved():
+            modified = False
             for c in range(9):
                 for r in range(9):
                     if self.get_cell(c, r) == '.':
                         v = self.get_cell_value_if_fixed(c, r)
                         if v:
                             self.set_cell(c, r, v)
+                            modified = True
+            if not modified:
+                return False
         return True
 
 
