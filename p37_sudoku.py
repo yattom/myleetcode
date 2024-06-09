@@ -4,8 +4,8 @@
 # - [x] 確定できる数字を置く
 #   - [x] 横一行だけで確定できる数字を置く
 #   - [x] 数字を確定できない場合
-#   - [ ] 縦一列だけで確定できる数字を置く
-#   - [ ] 3x3ブロックだけで確定できる数字を置く
+#   - [-] 縦一列だけで確定できる数字を置く
+#   - [-] 3x3ブロックだけで確定できる数字を置く
 #   - [x] 組み合わせで確定できる数字を置く
 # - [ ] 行き詰まったら仮置きを戻す (バックトラック)
 #   - [x] 可能な手をすべて確認する
@@ -13,16 +13,24 @@
 #   - [x] 行き詰まったらバックトラックする
 #   - [ ] バックトラックしたとき状態も戻す
 # - [ ] 全体を動かす
-#   - [ ] すでに解けている問題を解く
-#   - [ ] 自明な問題を解く
+#   - [x] すでに解けている問題を解く
+#   - [x] 自明な問題を解く
 #   - [ ] 仮置きが必要な問題を解く
 #   - [ ] まともな問題を解いて時間の様子を見る
 # - [ ] 数字を仮置きして進める
 # - [ ] 現在の状態を保持する
-# - [ ] 無限ループを直す
+# - [x] 無限ループを直す
 #   - [x] 問題が間違ってないか調べる
-#   - [ ] 途中経過を表示して何が起きているか調べる
-#   - [ ] 1ステップずつ結果を確認するようなテストを書く
+#   - [x] 途中経過を表示して何が起きているか調べる
+#   - [-] 1ステップずつ結果を確認するようなテストを書く
+#   - [x] テストを構造化
+#     - [x] 無限ループのテストを整理して確定のテストにする
+#     - [x] get_colのテスト
+# - [ ] 座標の取り扱い
+#   - [ ] 座標オブジェクト
+#   - [ ] colとrowを別の型にする
+# - [ ] 全網羅する自動テストを書く
+#   - やらない
 
 import pytest
 
@@ -65,6 +73,165 @@ class Test確定できる数字を置く:
         value = sudoku.get_cell_value_if_fixed(0, 0)
         # assert
         assert value == "9"
+
+    def test_確定できないセルの先に確定できるセルがある(self):
+        sudoku = make_sudoku(
+'''
+            . 3 . 6 7 8 9 1 2
+            6 7 2 1 9 5 3 4 8
+            1 9 8 3 4 2 5 6 7
+            8 5 9 7 6 1 4 2 3
+            . 2 6 8 5 3 7 9 1
+            7 1 3 9 2 4 8 5 6
+            9 6 1 5 3 7 2 8 4
+            2 8 7 4 1 9 6 3 5
+            3 4 . 2 8 6 1 7 9
+'''
+        )
+        # act
+        value = sudoku.get_cell_value_if_fixed(0, 4)
+        # assert
+        assert value == "4"
+
+    class Test横列の網羅:
+        def test_最初の行(self):
+            sudoku = make_sudoku(
+'''
+                . 3 4 6 7 8 9 1 2
+                6 7 2 1 9 5 3 4 8
+                1 9 8 3 4 2 5 6 7
+                8 5 9 7 6 1 4 2 3
+                4 2 6 8 5 3 7 9 1
+                7 1 3 9 2 4 8 5 6
+                9 6 1 5 3 7 2 8 4
+                2 8 7 4 1 9 6 3 5
+                3 4 5 2 8 6 1 7 9
+'''
+            )
+            # act
+            value = sudoku.get_cell_value_if_fixed(0, 0)
+            # assert
+            assert value == "5"
+
+        def test_左上のブロック(self):
+            sudoku = make_sudoku(
+'''
+                5 3 4 6 7 8 9 1 2
+                . 7 2 1 9 5 3 4 8
+                1 9 8 3 4 2 5 6 7
+                8 5 9 7 6 1 4 2 3
+                4 2 6 8 5 3 7 9 1
+                7 1 3 9 2 4 8 5 6
+                9 6 1 5 3 7 2 8 4
+                2 8 7 4 1 9 6 3 5
+                3 4 5 2 8 6 1 7 9
+'''
+            )
+            # act
+            value = sudoku.get_cell_value_if_fixed(0, 1)
+            # assert
+            assert value == "6"
+
+        def test_左中のブロック(self):
+            sudoku = make_sudoku(
+'''
+                5 3 4 6 7 8 9 1 2
+                6 7 2 1 9 5 3 4 8
+                1 9 8 3 4 2 5 6 7
+                8 5 9 7 6 1 4 2 3
+                . 2 6 8 5 3 7 9 1
+                7 1 3 9 2 4 8 5 6
+                9 6 1 5 3 7 2 8 4
+                2 8 7 4 1 9 6 3 5
+                3 4 5 2 8 6 1 7 9
+'''
+            )
+            # act
+            value = sudoku.get_cell_value_if_fixed(0, 4)
+            # assert
+            assert value == "4"
+
+        def test_最後の行(self):
+            # arrange
+            sudoku = make_sudoku(
+'''
+                5 3 4 6 7 8 9 1 2
+                6 7 2 1 9 5 3 4 8
+                1 9 8 3 4 2 5 6 7
+                8 5 9 7 6 1 4 2 3
+                4 2 6 8 5 3 7 9 1
+                7 1 3 9 2 4 8 5 6
+                9 6 1 5 3 7 2 8 4
+                2 8 7 4 1 9 6 3 5
+                . 4 5 2 8 6 1 7 9
+'''
+            )
+            # act
+            value = sudoku.get_cell_value_if_fixed(0, 8)
+            # assert
+            assert value == "3"
+
+
+class Test行や列やブロックの取得:
+    def test_get_block(self):
+        # arrange
+        sudoku = make_sudoku(
+'''
+            5 3 4 6 7 8 9 1 2
+            6 7 2 1 9 5 3 4 8
+            1 9 8 3 4 2 5 6 7
+            8 5 9 7 6 1 4 2 3
+            . 2 6 8 5 3 7 9 1
+            7 1 3 9 2 4 8 5 6
+            9 6 1 5 3 7 2 8 4
+            2 8 7 4 1 9 6 3 5
+            3 4 5 2 8 6 1 7 9
+'''
+        )
+        # act
+        block = sudoku.get_block(0, 4)
+        # assert
+        assert block == ['8', '5', '9', '.', '2', '6', '7', '1', '3']
+
+    def test_get_row(self):
+        # arrange
+        sudoku = make_sudoku(
+'''
+            5 3 4 6 7 8 9 1 2
+            6 7 2 1 9 5 3 4 8
+            1 9 8 3 4 2 5 6 7
+            8 5 9 7 6 1 4 2 3
+            . 2 6 8 5 3 7 9 1
+            7 1 3 9 2 4 8 5 6
+            9 6 1 5 3 7 2 8 4
+            2 8 7 4 1 9 6 3 5
+            3 4 5 2 8 6 1 7 9
+'''
+        )
+        # act
+        block = sudoku.get_row(4)
+        # assert
+        assert block == ['.', '2', '6', '8', '5', '3', '7', '9', '1']
+
+    def test_get_col(self):
+        # arrange
+        sudoku = make_sudoku(
+'''
+            5 3 4 6 7 8 9 1 2
+            6 7 2 1 9 5 3 4 8
+            1 9 8 3 4 2 5 6 7
+            8 5 9 7 6 1 4 2 3
+            6 2 6 8 5 3 . 9 1
+            7 1 3 9 2 4 8 5 6
+            9 6 1 5 3 7 2 8 4
+            2 8 7 4 1 9 6 3 5
+            3 4 5 2 8 6 1 7 9
+'''
+        )
+        # act
+        block = sudoku.get_col(6)
+        # assert
+        assert block == ['9', '3', '5', '4', '.', '8', '2', '6', '1']
 
 
 class Testバックトラック:
@@ -188,7 +355,6 @@ class Test全体を動かす:
         assert solved is True
         assert sudoku.get_cell(0, 0) == '5'
 
-    @pytest.mark.skip
     def test_自明な問題_空きが複数(self):
         # arrange
         # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
@@ -298,7 +464,7 @@ class Sudoku:
 
     def get_cell_value_if_fixed(self, col: int, row: int) -> str | None:
         available = set(["1", "2", "3", "4", "5", "6", "7", "8", "9"])
-        used = set(self.get_row(row) + self.get_col(col) + self.get_block(row, col)) - set(["."])
+        used = set(self.get_row(row) + self.get_col(col) + self.get_block(col, row)) - set(["."])
         possible = available - used
         if len(possible) == 1:
             return possible.pop()
