@@ -377,6 +377,7 @@ class Test全体を動かす:
         assert solved is True
         assert sudoku.get_cell(0, 0) == '5'
 
+    @pytest.mark.integration
     def test_仮置きが必要(self):
         # arrange
         # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
