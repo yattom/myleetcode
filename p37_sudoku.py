@@ -16,9 +16,17 @@
 #   - [x] すでに解けている問題を解く
 #   - [x] 自明な問題を解く
 #   - [ ] 仮置きが必要な問題を解く
+#     - [x] try_possibilities()をプロダクトコードにする
+#     - [ ] solve_by()を実装する
+#       - [ ] 仮置きを前提に、確定できる数字を置く
+#       - [ ] 確定できなくなったら、また仮置きする
+#     - [ ] search_next_moves()を実装する
+#     - [ ] バックトラックするときに元の状態に戻す
+#       - [ ] 進むときの手を保存する
+#       - [ ] 保存した手を使って元に戻す
 #   - [ ] まともな問題を解いて時間の様子を見る
-# - [ ] 数字を仮置きして進める
-# - [ ] 現在の状態を保持する
+# - [-] 数字を仮置きして進める
+# - [-] 現在の状態を保持する
 # - [x] 無限ループを直す
 #   - [x] 問題が間違ってないか調べる
 #   - [x] 途中経過を表示して何が起きているか調べる
@@ -235,18 +243,6 @@ class Test行や列やブロックの取得:
 
 
 class Testバックトラック:
-    @staticmethod
-    def try_possibilities(solve_by, search_next_moves):
-        moves = []
-        while True:
-            moves = search_next_moves() + moves
-            if not moves:
-                break
-            m = moves.pop(0)
-            if solve_by(m):
-                return True
-        return False
-
     def test_可能な手をすべて確認する(self):
         # arrange
         tried = []
@@ -256,8 +252,8 @@ class Testバックトラック:
         def search_next_moves():
             return [1, 2] if not tried else []
         # act
-        solved = Testバックトラック.try_possibilities(solve_by=_1はNGで2はOK,
-                                                      search_next_moves=search_next_moves)
+        solved = try_possibilities(solve_by=_1はNGで2はOK,
+                                   search_next_moves=search_next_moves)
         # assert
         assert solved
         assert tried == [1, 2]
@@ -279,8 +275,8 @@ class Testバックトラック:
             return []
 
         # act
-        solved = Testバックトラック.try_possibilities(solve_by=_1の後2はNGで3の後4はOK,
-                                                      search_next_moves=最初は1_3で1の後2を試し3の後は4を試す)
+        solved = try_possibilities(solve_by=_1の後2はNGで3の後4はOK,
+                                   search_next_moves=最初は1_3で1の後2を試し3の後は4を試す)
         # assert
         assert solved
         assert tried == [1, 2, 3, 4]
@@ -304,8 +300,8 @@ class Testバックトラック:
                         return []
 
         # act
-        solved = Testバックトラック.try_possibilities(solve_by=_1の後2はNGで3の後4はOK,
-                                                      search_next_moves=最初は101と201と301でそれぞれプラス1ずつして1桁が3に達したら行き詰まる)
+        solved = try_possibilities(solve_by=_1の後2はNGで3の後4はOK,
+                                   search_next_moves=最初は101と201と301でそれぞれプラス1ずつして1桁が3に達したら行き詰まる)
         # assert
         assert not solved
         assert tried == [101, 102, 103, 201, 202, 203, 301, 302, 303]
@@ -482,6 +478,18 @@ class TestIsSolved:
         # assert
         # 数独のルールを守っているかは確認しない
         assert sudoku.is_solved()
+
+
+def try_possibilities(solve_by, search_next_moves):
+    moves = []
+    while True:
+        moves = search_next_moves() + moves
+        if not moves:
+            break
+        m = moves.pop(0)
+        if solve_by(m):
+            return True
+    return False
 
 
 class Sudoku:
