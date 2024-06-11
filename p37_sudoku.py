@@ -310,13 +310,32 @@ class Testバックトラック:
         def test_行き詰まる手(self):
             # arrange
             sudoku = make_sudoku(
+            # (0, 0)に9を仮置きすると、(1, 0)に入るものがなくなる
 '''
-            ...
+            . . 7 6 5 4 3 2 1
+            .
+            .
+            . 8
 '''
             )
             # act
+            move = (0, 0, "9")
             # assert
-            assert not sudoku.solve_by('...')
+            assert not sudoku.solve_by(move)
+
+        def test_次に進める手(self):
+            # arrange
+            sudoku = make_sudoku(
+            # (0, 0)に9を仮置きすると、(1, 0)に8が入る
+'''
+            . . 7 6 5 4 3 2 1
+            .
+'''
+            )
+            # act
+            move = (0, 0, "9")
+            # assert
+            assert sudoku.solve_by(move)
 
 
 class Test全体を動かす:
@@ -539,7 +558,7 @@ class Sudoku:
         return not '.' in ''.join([''.join(s) for s in self.cells])
 
     def solve_by(self, move):
-        return True
+        return False
 
     def solve(self):
         while not self.is_solved():
