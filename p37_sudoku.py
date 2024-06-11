@@ -306,6 +306,18 @@ class Testバックトラック:
         assert not solved
         assert tried == [101, 102, 103, 201, 202, 203, 301, 302, 303]
 
+    class Test本物のSolveBy:
+        def test_行き詰まる手(self):
+            # arrange
+            sudoku = make_sudoku(
+'''
+            ...
+'''
+            )
+            # act
+            # assert
+            assert not sudoku.solve_by('...')
+
 
 class Test全体を動かす:
     def test_すでに解けている問題(self):
@@ -492,6 +504,7 @@ def try_possibilities(solve_by, search_next_moves):
     return False
 
 
+
 class Sudoku:
     def __init__(self, cells: list[list[str]]):
         self.cells = cells
@@ -524,6 +537,9 @@ class Sudoku:
 
     def is_solved(self):
         return not '.' in ''.join([''.join(s) for s in self.cells])
+
+    def solve_by(self, move):
+        return True
 
     def solve(self):
         while not self.is_solved():
