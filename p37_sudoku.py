@@ -549,7 +549,7 @@ class Sudoku:
 
     def get_possible_values_for_cell(self, col: int, row: int) -> list[str]:
         available = set(["1", "2", "3", "4", "5", "6", "7", "8", "9"])
-        used = set(self.get_row(row) + self.get_col(col) + self.get_block(col, row)) - set(["."])
+        used = set(self.get_row(row) + self.get_col(col) + self.get_block(col, row))
         possible = available - used
         return possible
 
