@@ -529,6 +529,8 @@ class Sudoku:
         self.cells = cells
 
     def get_row(self, row: int) -> list[str]:
+        if len(self.cells) <= row:
+            return []
         return [c for c in self.cells[row]]
 
     def get_col(self, col: int) -> list[str]:
@@ -545,34 +547,59 @@ class Sudoku:
     def set_cell(self, col: int, row: int, val: str) -> None:
         self.cells[row][col] = val
 
-    def get_cell_value_if_fixed(self, col: int, row: int) -> str | None:
+    def get_possible_values_for_cell(self, col: int, row: int) -> list[str]:
         available = set(["1", "2", "3", "4", "5", "6", "7", "8", "9"])
         used = set(self.get_row(row) + self.get_col(col) + self.get_block(col, row)) - set(["."])
         possible = available - used
+        return possible
+
+    def get_cell_value_if_fixed(self, col: int, row: int) -> str | None:
+        possible = self.get_possible_values_for_cell(col, row)
         if len(possible) == 1:
             return possible.pop()
         else:
             return None
 
+    def should_continue(self):
+        for c, r, _ in self.for_each_empty_cell():
+            possible = self.get_possible_values_for_cell(c, r)
+            if not possible:
+                return False
+        return True
+
+    def solve_by(self, move):
+        col, row, value = move
+        self.set_cell(col, row, value)
+        self.fix_all_possible_cells()
+        return self.should_continue()
+
+    def fix_all_possible_cells(self) -> None:
+        while True:
+            for col, row, value in self.for_each_empty_cell():
+                new_value = self.get_cell_value_if_fixed(col, row)
+                if new_value:
+                    self.set_cell(col, row, new_value)
+                    break
+            else:
+                return
+
     def is_solved(self):
         return not '.' in ''.join([''.join(s) for s in self.cells])
 
-    def solve_by(self, move):
-        return False
-
     def solve(self):
-        while not self.is_solved():
-            modified = False
-            for c in range(9):
-                for r in range(9):
-                    if self.get_cell(c, r) == '.':
-                        v = self.get_cell_value_if_fixed(c, r)
-                        if v:
-                            self.set_cell(c, r, v)
-                            modified = True
-            if not modified:
-                return False
-        return True
+        self.fix_all_possible_cells()
+        return self.is_solved()
+
+    def for_each_cell(self):
+        for col in range(9):
+            for row in range(9):
+                yield (col, row, self.get_cell(col, row))
+
+    def for_each_empty_cell(self):
+        for col, row, value in self.for_each_cell():
+            value = self.get_cell(col, row)
+            if value == '.':
+                yield (col, row, value)
 
 
 
