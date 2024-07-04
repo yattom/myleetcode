@@ -17,9 +17,9 @@
 #   - [x] 自明な問題を解く
 #   - [ ] 仮置きが必要な問題を解く
 #     - [x] try_possibilities()をプロダクトコードにする
-#     - [ ] solve_by()を実装する
-#       - [ ] 仮置きを前提に、確定できる数字を置く
-#       - [ ] 確定できなくなったら、また仮置きする
+#     - [x] solve_by()を実装する
+#       - [x] 仮置きを前提に、確定できる数字を置く
+#       - [x] 確定できなくなったら、また仮置きする
 #     - [ ] search_next_moves()を実装する
 #     - [ ] バックトラックするときに元の状態に戻す
 #       - [ ] 進むときの手を保存する
@@ -337,6 +337,22 @@ class Testバックトラック:
             # assert
             assert sudoku.solve_by(move)
 
+    class Test本物のsearch_next_moves:
+        def test_次に進める手(self):
+            # arrange
+            sudoku = make_sudoku(
+            # (0, 0)には7か8か9が入る
+'''
+            . 6 5 4 3 2 1
+'''
+            )
+            # act
+            # assert
+            assert sudoku.search_next_moves() == [
+                    (0, 0, '7'),
+                    (0, 0, '8'),
+                    (0, 0, '9')]
+
 
 class Test全体を動かす:
     def test_すでに解けている問題(self):
@@ -511,6 +527,8 @@ class TestIsSolved:
         assert sudoku.is_solved()
 
 
+
+
 def try_possibilities(solve_by, search_next_moves):
     moves = []
     while True:
@@ -585,6 +603,10 @@ class Sudoku:
 
     def is_solved(self):
         return not '.' in ''.join([''.join(s) for s in self.cells])
+
+    def search_next_moves(self):
+        col, row, _ = list(self.for_each_empty_cell())[0]
+        return [(col, row, p) for p in sorted(self.get_possible_values_for_cell(col, row))]
 
     def solve(self):
         self.fix_all_possible_cells()
