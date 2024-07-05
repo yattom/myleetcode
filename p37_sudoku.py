@@ -546,9 +546,8 @@ class TestIsSolved:
         # assert
         assert not sudoku.is_solved()
 
-    def test_妥当性は確認しない(self):
+    def test_妥当性を確認する(self):
         # arrange
-        # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
         sudoku = make_sudoku(
 '''
             0 0 0 0 9 9 9 9 9
@@ -564,10 +563,7 @@ class TestIsSolved:
         )
         # act
         # assert
-        # 数独のルールを守っているかは確認しない
-        assert sudoku.is_solved()
-
-
+        assert not sudoku.is_solved()
 
 
 def try_possibilities(solve_by, search_next_moves):
@@ -645,9 +641,22 @@ class Sudoku:
                 return
 
     def is_solved(self):
-        return not '.' in ''.join([''.join(s) for s in self.cells])
+        available = set(["1", "2", "3", "4", "5", "6", "7", "8", "9"])
+        for c, r, v in self.for_each_cell():
+            if v == '.':
+                return False
+            col = set(self.get_col(c))
+            row = set(self.get_row(r))
+            block = set(self.get_block(c, r))
+            if not (available == col == row == block):
+                return False
+
+        return True
 
     def search_next_moves(self):
+        empty_cells = list(self.for_each_empty_cell())
+        if not empty_cells:
+            return []
         col, row, _ = list(self.for_each_empty_cell())[0]
         possible_values = sorted(self.get_possible_values_for_cell(col, row))
         moves = []
@@ -657,7 +666,7 @@ class Sudoku:
         return moves
 
     def solve(self):
-        self.fix_all_possible_cells()
+        try_possibilities(self.solve_by, self.search_next_moves)
         return self.is_solved()
 
     def for_each_cell(self):
