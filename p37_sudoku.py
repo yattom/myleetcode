@@ -627,7 +627,11 @@ class Sudoku:
 
     def search_next_moves(self):
         col, row, _ = list(self.for_each_empty_cell())[0]
-        return [(col, row, p) for p in sorted(self.get_possible_values_for_cell(col, row))]
+        possible_values = sorted(self.get_possible_values_for_cell(col, row))
+        moves = []
+        for p in possible_values:
+            moves.append((col, row, p))
+        return moves
 
     def solve(self):
         self.fix_all_possible_cells()
