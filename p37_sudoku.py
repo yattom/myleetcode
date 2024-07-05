@@ -15,7 +15,7 @@
 # - [ ] 全体を動かす
 #   - [x] すでに解けている問題を解く
 #   - [x] 自明な問題を解く
-#   - [ ] 仮置きが必要な問題を解く
+#   - [x] 仮置きが必要な問題を解く
 #     - [x] try_possibilities()をプロダクトコードにする
 #     - [x] solve_by()を実装する
 #       - [x] 仮置きを前提に、確定できる数字を置く
@@ -32,8 +32,8 @@
 #         - [x] リファクタリング
 #         - [x] 盤面データのリストを返す
 #         - [x] 行き詰まったら空リストを帰す
-#       - [ ] solve()でtry_possibilities()を呼び出す
-#         - [ ] integrationテストを流す
+#       - [x] solve()でtry_possibilities()を呼び出す
+#         - [x] integrationテストを流す
 #   - [ ] まともな問題を解いて時間の様子を見る
 # - [-] 数字を仮置きして進める
 # - [-] 現在の状態を保持する
@@ -464,7 +464,6 @@ class Test全体を動かす:
     @pytest.mark.integration
     def test_仮置きが必要(self):
         # arrange
-        # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
         sudoku = make_sudoku(
 '''
             . . . 6 7 8 9 1 2
@@ -483,6 +482,42 @@ class Test全体を動かす:
         # assert
         assert solved is True
         assert sudoku.get_cell(0, 0) == '5'
+
+    @pytest.mark.integration
+    def test_Wikipediaの問題(self):
+        # arrange
+        # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
+        sudoku = make_sudoku(
+'''
+            5 3 . . 7 . . . .
+            6 . . 1 9 5 . . .
+            . 9 8 . . . . 6 .
+            8 . . . 6 . . . 3
+            4 . . 8 . 3 . . 1
+            7 . . . 2 . . . 6
+            . 6 . . . . 2 8 .
+            . . . 4 1 9 . . 5
+            . . . . 8 . . 7 9
+'''
+        )
+        # act
+        solved = sudoku.solve()
+        # assert
+        expected = make_sudoku(
+'''
+            5 3 4 6 7 8 9 1 2
+            6 7 2 1 9 5 3 4 8
+            1 9 8 3 4 2 5 6 7
+            8 5 9 7 6 1 4 2 3
+            4 2 6 8 5 3 7 9 1
+            7 1 3 9 2 4 8 5 6
+            9 6 1 5 3 7 2 8 4
+            2 8 7 4 1 9 6 3 5
+            3 4 5 2 8 6 1 7 9
+'''
+        )
+        assert solved is True
+        assert sudoku.cells == expected.cells
 
     def test_解けない場合(self):
         # arrange
