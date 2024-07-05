@@ -29,8 +29,8 @@
 #         - [x] moveの違いに対応
 #         - [x] 返り値を正しく直す
 #       - [ ] search_next_moves()を直す
-#         - [ ] リファクタリング
-#         - [ ] 盤面データのリストを返す
+#         - [x] リファクタリング
+#         - [x] 盤面データのリストを返す
 #         - [ ] 行き詰まったら空リストを帰す
 #       - [ ] solve()でtry_possibilities()を呼び出す
 #         - [ ] integrationテストを流す
@@ -372,11 +372,11 @@ class Testバックトラック:
 '''
             )
             # act
+            actual = sudoku.search_next_moves()
             # assert
-            assert sudoku.search_next_moves() == [
-                    (0, 0, '7'),
-                    (0, 0, '8'),
-                    (0, 0, '9')]
+            assert Sudoku(actual[0]).get_cell(0, 0) == '7'
+            assert Sudoku(actual[1]).get_cell(0, 0) == '8'
+            assert Sudoku(actual[2]).get_cell(0, 0) == '9'
 
 
 class Test全体を動かす:
@@ -566,6 +566,12 @@ def try_possibilities(solve_by, search_next_moves):
     return False
 
 
+def copy_and_mofidy_cells(cells: list[list[str]], col: int, row: int, val: str):
+    copy = Sudoku([])
+    copy.overwrite_cells(cells)
+    copy.set_cell(col, row, val)
+    return copy.cells
+
 
 class Sudoku:
     def __init__(self, cells: list[list[str]]):
@@ -630,7 +636,8 @@ class Sudoku:
         possible_values = sorted(self.get_possible_values_for_cell(col, row))
         moves = []
         for p in possible_values:
-            moves.append((col, row, p))
+            new_cells = copy_and_mofidy_cells(self.cells, col, row, p)
+            moves.append(new_cells)
         return moves
 
     def solve(self):
