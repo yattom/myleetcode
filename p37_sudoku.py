@@ -692,7 +692,7 @@ class Sudoku:
         empty_cells = list(self.for_each_empty_cell())
         if not empty_cells:
             return []
-        col, row, _ = list(self.for_each_empty_cell())[0]
+        col, row, _ = empty_cells[0]
         possible_values = sorted(self.get_possible_values_for_cell(col, row))
         moves = []
         for p in possible_values:
