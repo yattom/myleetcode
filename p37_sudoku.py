@@ -28,10 +28,10 @@
 #       - [x] solve_by()を直す
 #         - [x] moveの違いに対応
 #         - [x] 返り値を正しく直す
-#       - [ ] search_next_moves()を直す
+#       - [x] search_next_moves()を直す
 #         - [x] リファクタリング
 #         - [x] 盤面データのリストを返す
-#         - [ ] 行き詰まったら空リストを帰す
+#         - [x] 行き詰まったら空リストを帰す
 #       - [ ] solve()でtry_possibilities()を呼び出す
 #         - [ ] integrationテストを流す
 #   - [ ] まともな問題を解いて時間の様子を見る
@@ -377,6 +377,22 @@ class Testバックトラック:
             assert Sudoku(actual[0]).get_cell(0, 0) == '7'
             assert Sudoku(actual[1]).get_cell(0, 0) == '8'
             assert Sudoku(actual[2]).get_cell(0, 0) == '9'
+
+        def test_行き詰まっている手(self):
+            # arrange
+            sudoku = make_sudoku(
+            # (0, 0)に入るものがない
+'''
+            . 8 7 6 5 4 3 2 1
+            .
+            .
+            9
+'''
+            )
+            # act
+            actual = sudoku.search_next_moves()
+            # assert
+            assert actual == []
 
 
 class Test全体を動かす:
