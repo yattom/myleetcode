@@ -25,9 +25,9 @@
 #       - [-] 進むときの手を保存する
 #       - [-] 保存した手を使って元に戻す
 #     - [ ] 探索の仕様と設計見直しを反映する
-#       - [ ] solve_by()を直す
-#         - [ ] moveの違いに対応
-#         - [ ] 返り値を正しく直す
+#       - [x] solve_by()を直す
+#         - [x] moveの違いに対応
+#         - [x] 返り値を正しく直す
 #       - [ ] search_next_moves()を直す
 #         - [ ] リファクタリング
 #         - [ ] 盤面データのリストを返す
@@ -322,30 +322,45 @@ class Testバックトラック:
             sudoku = make_sudoku(
             # (0, 0)に9を仮置きすると、(1, 0)に入るものがなくなる
 '''
-            . . 7 6 5 4 3 2 1
+            9 . 7 6 5 4 3 2 1
             .
             .
             . 8
 '''
             )
-            # act
-            move = (0, 0, "9")
-            # assert
-            assert not sudoku.solve_by(move)
+            # act & assert
+            assert not sudoku.solve_by(sudoku.cells)
 
         def test_次に進める手(self):
             # arrange
             sudoku = make_sudoku(
             # (0, 0)に9を仮置きすると、(1, 0)に8が入る
 '''
-            . . 7 6 5 4 3 2 1
+            9 . 7 6 5 4 3 2 1
             .
 '''
             )
-            # act
-            move = (0, 0, "9")
-            # assert
-            assert sudoku.solve_by(move)
+            # act & assert
+            assert not sudoku.solve_by(sudoku.cells)
+
+        def test_解けている手(self):
+            # arrange
+            # problem is taken from Wikipedia https://en.wikipedia.org/wiki/Sudoku
+            sudoku = make_sudoku(
+'''
+                5 3 4 6 7 8 9 1 2
+                6 7 2 1 9 5 3 4 8
+                1 9 8 3 4 2 5 6 7
+                8 5 9 7 6 1 4 2 3
+                4 2 6 8 5 3 7 9 1
+                7 1 3 9 2 4 8 5 6
+                9 6 1 5 3 7 2 8 4
+                2 8 7 4 1 9 6 3 5
+                3 4 5 2 8 6 1 7 9
+'''
+            )
+            # act & assert
+            assert sudoku.solve_by(sudoku.cells)
 
     class Test本物のsearch_next_moves:
         def test_次に進める手(self):
@@ -588,18 +603,14 @@ class Sudoku:
         else:
             return None
 
-    def should_continue(self):
-        for c, r, _ in self.for_each_empty_cell():
-            possible = self.get_possible_values_for_cell(c, r)
-            if not possible:
-                return False
-        return True
+    def overwrite_cells(self, new_cells: list[list[str]]):
+        self.cells = [l[:] for l in new_cells]
 
     def solve_by(self, move):
-        col, row, value = move
-        self.set_cell(col, row, value)
+        cells_to_try = move
+        self.overwrite_cells(cells_to_try)
         self.fix_all_possible_cells()
-        return self.should_continue()
+        return self.is_solved()
 
     def fix_all_possible_cells(self) -> None:
         while True:
