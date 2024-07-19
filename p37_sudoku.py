@@ -519,6 +519,28 @@ class Test全体を動かす:
         assert solved is True
         assert sudoku.cells == expected.cells
 
+    @pytest.mark.integration
+    def test_空スタートの問題(self):
+        # arrange
+        sudoku = make_sudoku(
+'''
+            . . . . . . . . .
+            . . . . . . . . .
+            . . . . . . . . .
+            . . . . . . . . .
+            . . . . . . . . .
+            . . . . . . . . .
+            . . . . . . . . .
+            . . . . . . . . .
+            . . . . . . . . .
+'''
+        )
+        # act
+        solved = sudoku.solve()
+        # assert
+        assert solved is True
+        print(sudoku.cells)
+
     def test_解けない場合(self):
         # arrange
         sudoku = make_sudoku(
